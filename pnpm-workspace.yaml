@@ -1,7 +1,0 @@
-pmOnFail: ignore
-minimumReleaseAgeExclude:
-  - '@next/*'
-  - next
-overrides:
-  '@types/react': 19.3.0
-  '@types/react-dom': 19.3.0
