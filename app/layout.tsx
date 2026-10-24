@@ -1,6 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { DataProvider } from '@/lib/store'
+import { AppShell } from '@/components/app-shell'
 
 export const metadata: Metadata = {
   title: 'nugas.in — Atur waktu, selesaikan tugas',
@@ -41,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className="antialiased">
-        {children}
+        <DataProvider><AppShell>{children}</AppShell></DataProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
