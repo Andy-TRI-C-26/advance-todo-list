@@ -46,7 +46,7 @@ export function DashboardPage() {
           onClick={() => setForm("baru")}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
         >
-          <Plus className="size-4" /> Tambah tugas
+          <Plus className="size-4" /> Tambah jadwal
         </button>
       </div>
 
