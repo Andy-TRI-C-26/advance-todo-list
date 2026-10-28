@@ -4,7 +4,10 @@ import "./globals.css";
 import { AppProviders, AppShell } from "@/app-shell";
 
 export const metadata: Metadata = {
-  title: "nugas.in — Atur waktu, selesaikan tugas",
+  title: {
+    default: "nugas.in — Atur waktu, selesaikan tugas",
+    template: "%s | nugas.in"
+  },
   description:
     "Platform manajemen jadwal kuliah dan alokasi waktu nugas cerdas untuk mahasiswa.",
   generator: "v0.app",

@@ -1,6 +1,11 @@
+import type { Metadata } from 'next';
 import { DriveBackupCard, LocalDataCard } from "@/modules/backup";
 import { ProfileCard, SleepHoursNotice } from "@/modules/settings";
 import { SectionTitle } from "@/shared/ui/section-title";
+
+export const metadata: Metadata = {
+  title: "Pengaturan"
+};
 
 // Halaman ini menyusun kartu dari dua modul: settings dan backup.
 export default function Page() {
