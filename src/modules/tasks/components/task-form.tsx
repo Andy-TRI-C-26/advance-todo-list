@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCourses } from "@/modules/courses";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
@@ -10,9 +10,23 @@ import { Modal } from "@/shared/ui/modal";
 import { EASE } from "@/shared/ui/motion";
 import { inputClass } from "@/shared/ui/styles";
 import { useTasks } from "../tasks-context";
+import { TagPicker } from "./tag-picker";
 import type { Task, TaskPriority } from "../types";
 
 const PRIORITIES: TaskPriority[] = ["Tinggi", "Sedang", "Rendah"];
+const DAYS = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+
+function getNextDay(dayName: string) {
+  const targetDay = DAYS.indexOf(dayName);
+  if (targetDay === -1) return null;
+  const now = new Date();
+  const result = new Date(now);
+  let diff = targetDay - now.getDay();
+  if (diff <= 0) diff += 7; // Cari hari di pekan depan jika hari ini atau sudah lewat
+  result.setDate(now.getDate() + diff);
+  result.setHours(23, 0, 0, 0);
+  return result;
+}
 
 export function TaskForm({
   task,
@@ -25,16 +39,31 @@ export function TaskForm({
   const { saveTask } = useTasks();
   const { courses } = useCourses();
 
-  const [value, setValue] = useState<Task>(
-    task ?? {
+  const [value, setValue] = useState<Task>(() => {
+    if (task) return task;
+
+    const course = courses[0];
+    let deadline = new Date();
+    deadline.setDate(deadline.getDate() + 1); // Default besok
+    deadline.setHours(23, 0, 0, 0);
+
+    // Jika ada mata kuliah, coba gunakan hari kuliah terdekat
+    if (course) {
+      const nextClass = getNextDay(course.day);
+      if (nextClass) deadline = nextClass;
+    }
+
+    return {
       id: `t${Date.now()}`,
       title: "",
-      courseId: courses[0]?.id ?? "",
-      deadline: toLocalInput(new Date(Date.now() + 864e5)), // besok, jam yang sama
+      courseId: course?.id ?? "",
+      deadline: toLocalInput(deadline),
       hours: 1,
       priority: "Sedang",
-    },
-  );
+    };
+  });
+
+
   // Jam disimpan sebagai teks selama diketik, supaya kolom bisa dikosongkan dulu.
   const [hoursText, setHoursText] = useState(String(value.hours));
   const [error, setError] = useState("");
@@ -43,6 +72,15 @@ export function TaskForm({
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   // Desktop: panel tanggal masuk dari kanan. HP: masuk dari atas.
   const panelFrom = isDesktop ? { opacity: 0, x: 24 } : { opacity: 0, y: -8 };
+
+  useEffect(() => {
+    if (task) return;
+    const course = courses.find((c) => c.id === value.courseId);
+    if (course) {
+      const nextClass = getNextDay(course.day);
+      if (nextClass) set("deadline", toLocalInput(nextClass));
+    }
+  }, [value.courseId, courses, task]);
 
   const set = <K extends keyof Task>(key: K, next: Task[K]) =>
     setValue((prev) => ({ ...prev, [key]: next }));
@@ -140,6 +178,11 @@ export function TaskForm({
               </select>
             </Field>
           </div>
+
+          <TagPicker
+            value={value.tags ?? []}
+            onChange={(tags) => set("tags", tags)}
+          />
         </div>
 
         {/* ===== KANAN: TANGGAL (atas) — garis — JAM (bawah) ===== */}

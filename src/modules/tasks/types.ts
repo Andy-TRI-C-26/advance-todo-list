@@ -9,4 +9,9 @@ export type Task = {
   hours: number; // estimasi pengerjaan
   priority: TaskPriority;
   completed?: boolean;
+  /** Label bebas, mis. "Ujian". Opsional supaya tugas lama tetap valid. */
+  tags?: string[];
 };
+
+/** Pilihan tag yang ditawarkan di form. Daftar ini bisa ditambah kapan saja. */
+export const TASK_TAGS = ["Prioritas Tinggi", "Ujian", "Tugas Kelompok", "Bacaan"];

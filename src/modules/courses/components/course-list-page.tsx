@@ -50,10 +50,8 @@ export function CourseListPage() {
             className={cn(card, "flex flex-wrap items-center gap-4")}
           >
             <div
-              className={cn(
-                "grid size-11 place-items-center rounded-xl",
-                colorOf(course.color).ico,
-              )}
+              className="grid size-11 place-items-center rounded-xl"
+              style={colorOf(course.color).icon}
             >
               <GraduationCap className="size-5" />
             </div>

@@ -60,7 +60,7 @@ export function DateTimePicker({
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from(
-    new Set([...Array.from({ length: 12 }, (_, i) => i * 5), p.mi]),
+    new Set([...Array.from({ length: 60 }, (_, i) => i), p.mi]),
   ).sort((a, b) => a - b);
 
   const sel = "bg-indigo-600 text-white";

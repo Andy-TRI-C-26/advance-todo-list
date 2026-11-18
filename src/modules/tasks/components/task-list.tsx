@@ -88,6 +88,18 @@ export function TaskList({ onEdit, limitedTaskIds }: TaskListProps) {
                 timeStyle: "short",
               })}
             </p>
+            {task.tags && task.tags.length > 0 && (
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {task.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
             {!task.completed && limitedTaskIds?.has(task.id) && (
               <span className="mt-1.5 inline-block rounded-md bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
                 Waktu luang terbatas! Prinsipnya: yang penting selesai daripada

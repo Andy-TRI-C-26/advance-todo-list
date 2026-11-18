@@ -102,9 +102,9 @@ export function WeekCalendar() {
                     title="Seret untuk memindahkan jadwal"
                     className={cn(
                       "absolute inset-x-1 cursor-grab overflow-hidden rounded-lg border-l-4 p-2 text-[10px] font-semibold",
-                      colorOf(c.color).blk,
                     )}
                     style={{
+                      ...colorOf(c.color).block,
                       top: ((toMinutes(c.start) - START) / 60) * HOUR_HEIGHT,
                       height:
                         ((toMinutes(c.end) - toMinutes(c.start)) / 60) *

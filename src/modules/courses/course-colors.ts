@@ -1,23 +1,49 @@
-// `blk` = warna blok di kalender, `ico` = warna ikon di daftar.
-export const COURSE_COLORS: Record<string, { blk: string; ico: string }> = {
-  blue: {
-    blk: "border-indigo-500 bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-200",
-    ico: "bg-indigo-100 text-indigo-600",
-  },
-  violet: {
-    blk: "border-violet-500 bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-200",
-    ico: "bg-violet-100 text-violet-600",
-  },
-  rose: {
-    blk: "border-rose-500 bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-200",
-    ico: "bg-rose-100 text-rose-600",
-  },
-  amber: {
-    blk: "border-amber-500 bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-200",
-    ico: "bg-amber-100 text-amber-600",
-  },
+import type { CSSProperties } from "react";
+
+// Warna mata kuliah disimpan sebagai kode hex, mis. "#6366f1".
+// Hex diterapkan lewat `style`, karena Tailwind tidak bisa membuat class dari nilai dinamis.
+
+// Data lama menyimpan kunci ("blue", dst.). Dipetakan ke hex supaya tetap berwarna.
+const LEGACY_HEX: Record<string, string> = {
+  blue: "#6366f1",
+  violet: "#8b5cf6",
+  rose: "#f43f5e",
+  amber: "#f59e0b",
 };
 
-/** Ambil warna berdasarkan kunci; kunci tak dikenal -> biru. */
-export const colorOf = (key: string) =>
-  COURSE_COLORS[key] ?? COURSE_COLORS.blue;
+const HEX_RE = /^#[0-9a-f]{6}$/i;
+
+/** Ubah nilai warna (hex atau kunci lama) menjadi hex. Dipakai juga oleh color picker. */
+export function toHexColor(color: string) {
+  if (HEX_RE.test(color)) return color;
+  return LEGACY_HEX[color] ?? LEGACY_HEX.blue;
+}
+
+/** Warna acak dengan saturasi dan kecerahan tetap, supaya hasilnya selalu enak dilihat. */
+export function randomCourseHex() {
+  return hslToHex(Math.floor(Math.random() * 360), 70, 55);
+}
+
+function hslToHex(hue: number, saturation: number, lightness: number) {
+  const s = saturation / 100;
+  const l = lightness / 100;
+  const a = s * Math.min(l, 1 - l);
+  const channel = (n: number) => {
+    const k = (n + hue / 30) % 12;
+    const value = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(value * 255).toString(16).padStart(2, "0");
+  };
+  return `#${channel(0)}${channel(8)}${channel(4)}`;
+}
+
+/** Gaya untuk blok kalender (`block`) dan ikon daftar (`icon`). */
+export function colorOf(color: string): {
+  block: CSSProperties;
+  icon: CSSProperties;
+} {
+  const hex = toHexColor(color);
+  return {
+    block: { borderLeftColor: hex, backgroundColor: `${hex}26`, color: hex },
+    icon: { backgroundColor: `${hex}26`, color: hex },
+  };
+}

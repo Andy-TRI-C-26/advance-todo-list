@@ -5,6 +5,7 @@ import { Field } from "@/shared/ui/field";
 import { Modal } from "@/shared/ui/modal";
 import { inputClass } from "@/shared/ui/styles";
 import { useCourses } from "../courses-provider";
+import { randomCourseHex, toHexColor } from "../course-colors";
 import type { Course } from "../types";
 
 const EARLIEST = 5 * 60; // 05.00
@@ -19,7 +20,7 @@ function newCourse(): Course {
     end: "09:40",
     room: "",
     lecturer: "",
-    color: "blue",
+    color: randomCourseHex(),
   };
 }
 
@@ -106,16 +107,23 @@ export function CourseForm({
           />
         </Field>
         <Field label="Warna">
-          <select
-            className={inputClass}
-            value={value.color}
-            onChange={(e) => set("color", e.target.value)}
-          >
-            <option value="blue">Indigo</option>
-            <option value="violet">Violet</option>
-            <option value="rose">Mawar</option>
-            <option value="amber">Amber</option>
-          </select>
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              type="color"
+              aria-label="Pilih warna mata kuliah"
+              className="size-10 shrink-0 cursor-pointer rounded-lg border border-slate-200 bg-transparent p-1 dark:border-slate-700"
+              value={toHexColor(value.color)}
+              onChange={(e) => set("color", e.target.value)}
+            />
+            <button
+              type="button"
+              aria-label="Acak warna"
+              onClick={() => set("color", randomCourseHex())}
+              className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold dark:border-slate-700"
+            >
+              Acak
+            </button>
+          </div>
         </Field>
       </div>
       <Field label="Dosen">
