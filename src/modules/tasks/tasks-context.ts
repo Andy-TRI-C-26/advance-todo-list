@@ -10,6 +10,7 @@ export type TasksContextValue = {
   tasks: Task[];
   saveTask: (task: Task) => void;
   toggleTask: (id: string) => void;
+  recordStudySession: (id: string, minutes: number, startedAt: string) => void;
   deleteTask: (id: string) => void;
   clearTasks: () => void;
   replaceTasks: (tasks: Task[]) => void;

@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
-import { DriveBackupCard, LocalDataCard } from "@/modules/backup";
+import {
+  CalendarBackupCard,
+  DriveBackupCard,
+  LocalDataCard,
+} from "@/modules/backup";
 import { ProfileCard, SleepHoursNotice } from "@/modules/settings";
 import { SectionTitle } from "@/shared/ui/section-title";
 
@@ -15,6 +19,7 @@ export default function Page() {
       <div className="mt-5 flex flex-col gap-4">
         <ProfileCard />
         <LocalDataCard />
+        <CalendarBackupCard />
         <DriveBackupCard />
         <SleepHoursNotice />
       </div>

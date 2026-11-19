@@ -17,11 +17,13 @@ Detail lebih lengkap ada di `ARCHITECTURE.md`.
 ## 2. Perintah
 
 ```bash
-npm run typecheck             # tsc --noEmit        (WAJIB hijau)
-npm run check:architecture    # penjaga batas modul (WAJIB hijau)
-npm run build                 # build produksi
-npm run dev                   # server pengembangan
+<packacge manager> run typecheck             # tsc --noEmit        (WAJIB hijau)
+<packacge manager> run check:architecture    # penjaga batas modul (WAJIB hijau)
+<packacge manager> run dev                   # server pengembangan
 ```
+package manager yang digunakan dan diutamakan sesuai urutan: bun, pnpm, yarn, npm.
+
+informasi: penggunaan package manager memiliki sedikit perbedaan dibeberapa versi. dalam hal execute bun bisa `bunx` atau `bun x`.
 
 Setelah setiap perubahan kode, jalankan `typecheck` dan `check:architecture`.
 Jangan menyatakan pekerjaan selesai sebelum keduanya lolos.
@@ -70,6 +72,8 @@ Sumber kebenaran: konstanta `ALLOWED` di `scripts/check-architecture.mjs`.
 | dashboard | tasks, scheduling |
 
 Lapisan: `courses/settings/notifications` (1) → `tasks` (2) → `scheduling` (3) → `dashboard/recommendation/backup` (4). Hanya boleh bergantung **ke bawah**. Tidak boleh ada lingkaran.
+
+aturan ini dapat diupdate oleh AI agent apapun tetapi tetap mengikuti aturan lapisan
 
 ### Aturan keras
 
@@ -184,7 +188,6 @@ Ubah di `shared/ui/`, lalu periksa **semua** pemakainya (`grep` nama komponen). 
 
 ## 9. Checklist sebelum menyatakan selesai
 
-- [ ] **Tidak ada file lama yang ditulis ulang utuh**; setiap perubahan disajikan sebagai Langkah (file, lokasi, kode, kenapa) sesuai bagian 0
 - [ ] Penyebab bug (jika ada) dijelaskan 1 kalimat; penjelasan tiap langkah maksimal 2 kalimat
 - [ ] `npm run typecheck` lolos
 - [ ] `npm run check:architecture` lolos

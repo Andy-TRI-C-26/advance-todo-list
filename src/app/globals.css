@@ -46,20 +46,20 @@
 
 :root {
   color-scheme: light;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.52 0.22 275);
+  --background: oklch(0.972 0.008 238);
+  --foreground: oklch(0.205 0.025 245);
+  --card: oklch(0.995 0.003 238);
+  --card-foreground: oklch(0.205 0.025 245);
+  --popover: oklch(0.995 0.003 238);
+  --popover-foreground: oklch(0.205 0.025 245);
+  --primary: oklch(0.45 0.09 235);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.94 0.012 238);
+  --secondary-foreground: oklch(0.205 0.025 245);
+  --muted: oklch(0.942 0.008 238);
+  --muted-foreground: oklch(0.49 0.025 245);
+  --accent: oklch(0.79 0.075 174);
+  --accent-foreground: oklch(0.205 0.025 245);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -69,10 +69,10 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.995 0.003 238);
+  --sidebar-foreground: oklch(0.205 0.025 245);
+  --sidebar-primary: oklch(0.45 0.09 235);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
@@ -157,21 +157,199 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  html[data-theme-scroll-lock="true"] {
+    overflow: hidden;
+    scrollbar-width: none;
+  }
+
+  html[data-theme-scroll-lock="true"]::-webkit-scrollbar {
+    display: none;
+  }
+
+    html[data-theme-transition="reveal"] [data-theme-header] {
+      view-transition-name: none;
+    }
+
   body {
     @apply bg-background text-foreground;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Avenir Next", "Segoe UI", Arial, Helvetica, sans-serif;
+    text-rendering: optimizeLegibility;
   }
 
   button {
     cursor: pointer;
   }
 
-  .no-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  :focus-visible {
+    outline: 3px solid oklch(0.72 0.11 174);
+    outline-offset: 3px;
   }
 
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  ::selection {
+    background: oklch(0.79 0.075 174);
+    color: oklch(0.205 0.025 245);
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important;
+    }
+  }
+}
+
+#page-content,
+[data-page-heading] {
+  view-transition-name: page-content;
+}
+
+[data-page-heading] {
+  view-transition-name: page-heading;
+  width: fit-content;
+}
+
+::view-transition-group(page-heading) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+::view-transition-old(page-heading),
+::view-transition-new(page-heading) {
+  height: 100%;
+  overflow: clip;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-view-transition-direction="forward"]::view-transition-old(page-content) {
+    animation: 280ms cubic-bezier(0.32, 0.72, 0, 1) both page-out-back;
+  }
+
+  html[data-view-transition-direction="forward"]::view-transition-new(page-content) {
+    animation: 480ms cubic-bezier(0.32, 0.72, 0, 1) both page-in-forward;
+  }
+
+  html[data-view-transition-direction="backward"]::view-transition-old(page-content) {
+    animation: 280ms cubic-bezier(0.32, 0.72, 0, 1) both page-out-forward;
+  }
+
+  html[data-view-transition-direction="backward"]::view-transition-new(page-content) {
+    animation: 480ms cubic-bezier(0.32, 0.72, 0, 1) both page-in-back;
+  }
+}
+
+@keyframes page-in-forward {
+  from {
+    opacity: 0;
+    translate: 3.5rem 0;
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+
+@keyframes page-in-back {
+  from {
+    opacity: 0;
+    translate: -3.5rem 0;
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+
+@keyframes page-out-forward {
+  to {
+    opacity: 0;
+    translate: 2.25rem 0;
+    filter: blur(3px);
+  }
+}
+
+@keyframes page-out-back {
+  to {
+    opacity: 0;
+    translate: -2.25rem 0;
+    filter: blur(3px);
+  }
+}
+
+.theme-reveal {
+  clip-path: circle(0 at var(--theme-reveal-x) var(--theme-reveal-y));
+  animation: theme-reveal 520ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  background-color: var(--theme-reveal-background);
+}
+
+@keyframes theme-reveal {
+  to {
+    clip-path: circle(
+      var(--theme-reveal-radius) at var(--theme-reveal-x) var(--theme-reveal-y)
+    );
+  }
+}
+
+html[data-theme-transition]::view-transition-group(root),
+html[data-theme-transition]::view-transition-group(page-content),
+html[data-theme-transition]::view-transition-group(page-heading) {
+  animation: none;
+}
+
+html[data-theme-transition]::view-transition-old(root),
+html[data-theme-transition]::view-transition-old(page-content),
+html[data-theme-transition]::view-transition-old(page-heading) {
+  animation: none;
+}
+
+html[data-theme-transition]::view-transition-new(root),
+html[data-theme-transition]::view-transition-new(page-content),
+html[data-theme-transition]::view-transition-new(page-heading) {
+  animation: theme-view-transition 520ms cubic-bezier(0.32, 0.72, 0, 1)
+    forwards;
+  clip-path: circle(
+    0 at var(--theme-reveal-x) var(--theme-reveal-y)
+  );
+}
+
+@keyframes theme-view-transition {
+  to {
+    clip-path: circle(
+      var(--theme-reveal-radius) at var(--theme-reveal-x) var(--theme-reveal-y)
+    );
+  }
+}
+
+dialog:modal {
+  overscroll-behavior: contain;
+  margin: auto;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   buildDateTime,
   MONTHS,
-  pad,
   parseDateTime,
   WEEK,
 } from "../lib/date-time";
+import { TimePicker } from "./time-picker";
 
 /** Panel tanggal (atas) + garis + jam (bawah). Tanpa kartu sendiri, menyatu dengan modal. */
 export function DateTimePicker({
@@ -21,21 +21,6 @@ export function DateTimePicker({
 }) {
   const p = parseDateTime(value);
   const [view, setView] = useState({ y: p.y, m: p.m });
-  const hourRef = useRef<HTMLDivElement>(null);
-  const minRef = useRef<HTMLDivElement>(null);
-
-  // Saat panel muncul, gulung daftar jam/menit ke nilai terpilih
-  useEffect(() => {
-    const center = (box: HTMLDivElement | null) => {
-      const el = box?.querySelector<HTMLElement>('[data-sel="true"]');
-      if (box && el)
-        box.scrollTop =
-          el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2;
-    };
-    center(hourRef.current);
-    center(minRef.current);
-  }, []);
-
   const now = new Date();
   const years: number[] = [];
   for (
@@ -58,23 +43,18 @@ export function DateTimePicker({
       return { y: d.getFullYear(), m: d.getMonth() };
     });
 
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minutes = Array.from(
-    new Set([...Array.from({ length: 60 }, (_, i) => i), p.mi]),
-  ).sort((a, b) => a - b);
-
   const sel = "bg-indigo-600 text-white";
   const small =
-    "rounded-md border border-slate-200 bg-white px-1.5 py-1 text-sm outline-none focus:border-indigo-500";
+    "rounded-md border border-slate-200 bg-white px-1.5 py-1 text-sm outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
 
   return (
-    <div className="text-slate-800">
+    <div className="text-slate-800 dark:text-slate-200">
       {/* ===== TANGGAL ===== */}
       <div className="mb-2 flex items-center gap-1">
         <button
           type="button"
           onClick={() => shift(-1)}
-          className="grid h-8 w-8 place-items-center rounded-md hover:bg-slate-100"
+          className="grid h-8 w-8 place-items-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
           aria-label="Bulan sebelumnya"
         >
           ‹
@@ -102,7 +82,7 @@ export function DateTimePicker({
         <button
           type="button"
           onClick={() => shift(1)}
-          className="grid h-8 w-8 place-items-center rounded-md hover:bg-slate-100"
+          className="grid h-8 w-8 place-items-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
           aria-label="Bulan berikutnya"
         >
           ›
@@ -132,8 +112,8 @@ export function DateTimePicker({
                 onChange(buildDateTime({ ...p, y: view.y, m: view.m, d }))
               }
               className={`h-8 rounded-md text-sm ${
-                picked ? sel : "hover:bg-slate-100"
-              } ${today && !picked ? "font-semibold text-indigo-600" : ""}`}
+                picked ? sel : "hover:bg-slate-100 dark:hover:bg-slate-800"
+              } ${today && !picked ? "font-semibold text-indigo-600 dark:text-indigo-400" : ""}`}
             >
               {d}
             </button>
@@ -142,59 +122,21 @@ export function DateTimePicker({
       </div>
 
       {/* ===== GARIS PEMISAH HORIZONTAL ===== */}
-      <hr className="my-3 border-slate-200" />
+      <hr className="my-3 border-slate-200 dark:border-slate-700" />
 
-      {/* ===== JAM ===== */}
-      <div className="flex items-start justify-center gap-2">
-        <div className="flex-1">
-          <div className="mb-1 text-center text-xs text-slate-400">Jam</div>
-          <div
-            ref={hourRef}
-            className="relative h-28 overflow-y-auto rounded-lg border border-slate-200 p-1 no-scrollbar"
-          >
-            {hours.map((h) => (
-              <button
-                key={h}
-                type="button"
-                data-sel={p.h === h}
-                onClick={() => onChange(buildDateTime({ ...p, h }))}
-                className={`block h-8 w-full rounded-md text-sm ${
-                  p.h === h ? sel : "hover:bg-slate-100"
-                }`}
-              >
-                {pad(h)}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="mt-7 text-lg font-semibold text-slate-400">:</div>
-        <div className="flex-1">
-          <div className="mb-1 text-center text-xs text-slate-400">Menit</div>
-          <div
-            ref={minRef}
-            className="relative h-28 overflow-y-auto rounded-lg border border-slate-200 p-1 no-scrollbar"
-          >
-            {minutes.map((m) => (
-              <button
-                key={m}
-                type="button"
-                data-sel={p.mi === m}
-                onClick={() => onChange(buildDateTime({ ...p, mi: m }))}
-                className={`block h-8 w-full rounded-md text-sm ${
-                  p.mi === m ? sel : "hover:bg-slate-100"
-                }`}
-              >
-                {pad(m)}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      <TimePicker
+        value={`${String(p.h).padStart(2, "0")}:${String(p.mi).padStart(2, "0")}`}
+        onChange={(time) => {
+          const [h, mi] = time.split(":").map(Number);
+          onChange(buildDateTime({ ...p, h, mi }));
+        }}
+        ariaLabel="Pilih waktu deadline"
+      />
 
       <button
         type="button"
         onClick={onDone}
-        className="mt-3 w-full rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        className="mt-3 w-full rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
       >
         Selesai
       </button>

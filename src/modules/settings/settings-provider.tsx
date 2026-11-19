@@ -10,13 +10,34 @@ const DEFAULT_SETTINGS: Settings = {
   sleepEnd: "05:00",
   dark: false,
   driveConnected: false,
+  onboardingCompleted: false,
+  onboardingWelcomeSeen: false,
+  onboardingCompletedPages: [],
 };
 
 // Gabungkan data tersimpan dengan nilai default (berguna jika nanti ada field baru).
-const normalize = (stored: unknown): Settings | undefined =>
-  stored && typeof stored === "object"
-    ? { ...DEFAULT_SETTINGS, ...(stored as Partial<Settings>) }
-    : undefined;
+const normalize = (stored: unknown): Settings | undefined => {
+  if (!stored || typeof stored !== "object") return undefined;
+
+  const savedSettings = stored as Partial<Settings>;
+  const oldImplementationCompleted = savedSettings.onboardingCompleted === true;
+  return {
+    ...DEFAULT_SETTINGS,
+    ...savedSettings,
+    onboardingWelcomeSeen:
+      typeof savedSettings.onboardingWelcomeSeen === "boolean"
+        ? savedSettings.onboardingWelcomeSeen
+        : typeof savedSettings.onboardingCompleted === "boolean"
+          ? savedSettings.onboardingCompleted
+          : false,
+    onboardingCompletedPages:
+      Array.isArray(savedSettings.onboardingCompletedPages)
+        ? savedSettings.onboardingCompletedPages
+        : oldImplementationCompleted
+          ? ["dashboard", "jadwal", "rekomendasi", "pengaturan"]
+          : [],
+  };
+};
 
 type SettingsContextValue = {
   ready: boolean;

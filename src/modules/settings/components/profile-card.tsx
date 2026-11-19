@@ -5,7 +5,7 @@ import { useSettings } from "../settings-provider";
 export function ProfileCard() {
   const { settings, updateSettings } = useSettings();
   return (
-    <div className={card}>
+    <div data-tour="profile-name" className={card}>
       <label className="text-sm font-semibold">
         Nama kamu
         <input

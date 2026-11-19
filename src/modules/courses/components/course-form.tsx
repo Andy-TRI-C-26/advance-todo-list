@@ -4,6 +4,7 @@ import { DAYS, toMinutes } from "@/shared/lib/date-time";
 import { Field } from "@/shared/ui/field";
 import { Modal } from "@/shared/ui/modal";
 import { inputClass } from "@/shared/ui/styles";
+import { TimePicker } from "@/shared/ui/time-picker";
 import { useCourses } from "../courses-provider";
 import { randomCourseHex, toHexColor } from "../course-colors";
 import type { Course } from "../types";
@@ -84,19 +85,17 @@ export function CourseForm({
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label="Mulai">
-          <input
-            type="time"
-            className={inputClass}
+          <TimePicker
             value={value.start}
-            onChange={(e) => set("start", e.target.value)}
+            onChange={(time) => set("start", time)}
+            ariaLabel="Pilih jam mulai"
           />
         </Field>
         <Field label="Selesai">
-          <input
-            type="time"
-            className={inputClass}
+          <TimePicker
             value={value.end}
-            onChange={(e) => set("end", e.target.value)}
+            onChange={(time) => set("end", time)}
+            ariaLabel="Pilih jam selesai"
           />
         </Field>
         <Field label="Ruangan">

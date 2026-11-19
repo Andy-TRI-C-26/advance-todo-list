@@ -31,7 +31,7 @@ export function TagPicker({
                 "rounded-full border px-3 py-1 text-xs font-medium transition",
                 active
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-700",
+                  : "border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-600",
               )}
             >
               {tag}

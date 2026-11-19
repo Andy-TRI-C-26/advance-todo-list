@@ -23,7 +23,7 @@ export function FocusCard() {
         <Sparkles className="size-4" />
       </div>
       <p className="text-sm font-semibold">Fokus saat ini</p>
-      <p className="mt-1 text-xs leading-relaxed text-slate-500">
+      <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
         {totalHours
           ? `Kamu punya ${totalHours} jam tugas yang perlu diselesaikan.`
           : "Tidak ada tugas aktif. Santai dulu!"}
@@ -34,7 +34,7 @@ export function FocusCard() {
           style={{ width: `${percentAllocated}%` }}
         />
       </div>
-      <p className="mt-2 text-[11px] text-slate-500">
+      <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
         {percentAllocated}% waktu teralokasi
       </p>
     </div>

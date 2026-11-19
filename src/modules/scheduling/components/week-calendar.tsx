@@ -124,7 +124,12 @@ export function WeekCalendar() {
                 .map((s, i) => (
                   <div
                     key={i}
-                    className="pointer-events-none absolute inset-x-1 overflow-hidden rounded-lg border border-dashed border-teal-500 bg-teal-50/80 p-1.5 text-[9px] font-semibold text-teal-700 dark:bg-teal-950/70 dark:text-teal-200"
+                    className={cn(
+                      "pointer-events-none absolute inset-x-1 overflow-hidden rounded-lg p-1.5 text-[9px] font-semibold",
+                      s.fixed
+                        ? "border border-solid border-violet-500 bg-violet-50/90 text-violet-700 dark:bg-violet-950/80 dark:text-violet-200"
+                        : "border border-dashed border-teal-500 bg-teal-50/80 text-teal-700 dark:bg-teal-950/70 dark:text-teal-200",
+                    )}
                     style={{
                       top: ((minutesOfDay(s.start) - START) / 60) * HOUR_HEIGHT,
                       height: Math.max(
@@ -135,6 +140,7 @@ export function WeekCalendar() {
                       ),
                     }}
                   >
+                    {s.fixed ? "★ " : ""}
                     {tasks.find((t) => t.id === s.taskId)?.title} ·{" "}
                     {Math.round(
                       (minutesOfDay(s.end) - minutesOfDay(s.start)) / 6,

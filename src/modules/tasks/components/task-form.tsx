@@ -66,6 +66,12 @@ export function TaskForm({
 
   // Jam disimpan sebagai teks selama diketik, supaya kolom bisa dikosongkan dulu.
   const [hoursText, setHoursText] = useState(String(value.hours));
+  const [membersText, setMembersText] = useState(
+    (value.groupMembers ?? []).join(", "),
+  );
+  const [subtasksText, setSubtasksText] = useState(
+    (value.subtasks ?? []).map((item) => item.title).join("\n"),
+  );
   const [error, setError] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -89,7 +95,26 @@ export function TaskForm({
     const hours = Number(hoursText);
     if (!value.title.trim()) return setError("Nama tugas wajib diisi.");
     if (!(hours > 0)) return setError("Estimasi jam harus lebih dari 0.");
-    saveTask({ ...value, title: value.title.trim(), hours });
+    const subtasks = subtasksText
+      .split("\n")
+      .map((title, index) => ({
+        id: value.subtasks?.[index]?.id ?? `${value.id}-subtask-${index}`,
+        title: title.trim(),
+        completed: value.subtasks?.[index]?.completed ?? false,
+      }))
+      .filter((item) => item.title);
+    const groupMembers = membersText
+      .split(",")
+      .map((member) => member.trim())
+      .filter(Boolean);
+    saveTask({
+      ...value,
+      title: value.title.trim(),
+      hours,
+      progress: Math.min(100, Math.max(0, value.progress ?? 0)),
+      subtasks,
+      groupMembers,
+    });
     onClose();
   }
 
@@ -178,6 +203,59 @@ export function TaskForm({
               </select>
             </Field>
           </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Energi yang dibutuhkan">
+              <select
+                className={inputClass}
+                value={value.energy ?? "Sedang"}
+                onChange={(e) =>
+                  set("energy", e.target.value as Task["energy"])
+                }
+              >
+                <option>Tinggi</option>
+                <option>Sedang</option>
+                <option>Rendah</option>
+              </select>
+            </Field>
+            <Field label="Progres (%)">
+              <input
+                type="number"
+                min={0}
+                max={100}
+                className={inputClass}
+                value={value.progress ?? 0}
+                onChange={(e) => set("progress", Number(e.target.value))}
+              />
+            </Field>
+          </div>
+
+          <Field label="Langkah kecil (satu per baris)">
+            <textarea
+              className={`${inputClass} min-h-20`}
+              value={subtasksText}
+              onChange={(e) => setSubtasksText(e.target.value)}
+              placeholder="Contoh: Cari referensi jurnal&#10;Tulis analisis"
+            />
+          </Field>
+
+          <Field label="Anggota kelompok (pisahkan dengan koma)">
+            <input
+              className={inputClass}
+              value={membersText}
+              onChange={(e) => setMembersText(e.target.value)}
+              placeholder="Nama anggota 1, Nama anggota 2"
+            />
+          </Field>
+
+          <Field label="Deadline internal kelompok (opsional)">
+            <input
+              type="datetime-local"
+              className={inputClass}
+              value={value.internalDeadline ?? ""}
+              onChange={(e) => set("internalDeadline", e.target.value || undefined)}
+            />
+          </Field>
 
           <TagPicker
             value={value.tags ?? []}

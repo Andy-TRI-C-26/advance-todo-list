@@ -5,6 +5,8 @@ export type RecommendationPayload = {
     course: string;
     deadline: string;
     hours: number;
+    progress: number;
+    energy: string;
   };
   otherTasks: Array<{
     title: string;
@@ -19,10 +21,13 @@ export type RecommendationPayload = {
     operatingStart: string;
     operatingEnd: string;
   };
+  currentTime: string;
 };
 
 /** Jawaban AI. */
 export type Recommendation = {
-  waktu: string; // contoh: "Senin, 26 Oktober 2026 - 19:00"
+  start: string;
+  end: string;
   alasan: string;
+  langkah: string[];
 };

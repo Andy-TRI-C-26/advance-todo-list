@@ -48,14 +48,14 @@ export function DriveBackupCard() {
     });
 
   return (
-    <div className={card}>
+    <div data-tour="drive-backup" className={card}>
       <div className="flex items-start gap-4">
-        <div className="grid size-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600">
+        <div className="grid size-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
           <CloudUpload className="size-5" />
         </div>
         <div className="flex-1">
           <p className="font-semibold">Backup & sinkronisasi Google Drive</p>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Status:{" "}
             <b>{settings.driveConnected ? "Terhubung" : "Belum terhubung"}</b>
             {settings.lastBackup &&
@@ -92,7 +92,7 @@ export function DriveBackupCard() {
               Pulihkan dari backup
             </button>
           </div>
-          {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
         </div>
       </div>
     </div>

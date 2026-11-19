@@ -45,6 +45,21 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       setTasks((list) =>
         list.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
       ),
+    recordStudySession: (id, minutes, startedAt) =>
+      setTasks((list) =>
+        list.map((t) =>
+          t.id === id
+            ? {
+                ...t,
+                studySessions: [
+                  ...(t.studySessions ?? []),
+                  { startedAt, minutes },
+                ],
+                actualMinutes: (t.actualMinutes ?? 0) + minutes,
+              }
+            : t,
+        ),
+      ),
     deleteTask: (id) => setTasks((list) => list.filter((t) => t.id !== id)),
     clearTasks: () => setTasks([]),
     replaceTasks: setTasks,

@@ -15,15 +15,16 @@ export function StatCard({
   note: string;
 }) {
   return (
-    <div className={card}>
+    <div className={cn(card, "relative overflow-hidden")}>
+      <span className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#16324f] via-[#1d6b64] to-[#8dd3c7]" />
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-sm text-slate-500">{label}</span>
+        <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
         <div className={cn("grid size-9 place-items-center rounded-xl", tint)}>
           {icon}
         </div>
       </div>
       <p className="text-2xl font-bold">{value}</p>
-      <p className="mt-1 text-xs text-slate-400">{note}</p>
+      <p className="mt-1 text-xs text-slate-400 dark:text-slate-400">{note}</p>
     </div>
   );
 }

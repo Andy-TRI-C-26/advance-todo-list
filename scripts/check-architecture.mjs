@@ -24,7 +24,7 @@ const ALLOWED = {
   tasks: ["courses", "notifications"],
   scheduling: ["tasks", "courses", "settings", "notifications"],
   recommendation: ["tasks", "courses", "settings"],
-  backup: ["tasks", "courses", "settings", "notifications"],
+  backup: ["tasks", "courses", "settings", "notifications", "scheduling"],
   dashboard: ["tasks", "scheduling"],
 };
 

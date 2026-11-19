@@ -5,4 +5,7 @@ export type Settings = {
   dark: boolean;
   driveConnected: boolean;
   lastBackup?: string; // ISO string
+  onboardingCompleted?: boolean;
+  onboardingWelcomeSeen?: boolean;
+  onboardingCompletedPages?: string[];
 };

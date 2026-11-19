@@ -9,11 +9,14 @@ import { colorOf } from "../course-colors";
 import { useCourses } from "../courses-provider";
 import type { Course } from "../types";
 import { CourseForm } from "./course-form";
+import { DeleteConfirmationDialog } from "@/shared/ui/delete-confirmation-dialog";
 
 export function CourseListPage() {
   const { courses, deleteCourse } = useCourses();
   // "baru" = form tambah, Course = form ubah, null = form tertutup
   const [form, setForm] = useState<Course | "baru" | null>(null);
+  const [deleteCourseTarget, setDeleteCourseTarget] =
+    useState<Course | null>(null);
 
   // Urutkan: hari dulu, lalu jam mulai
   const sorted = [...courses].sort(
@@ -29,6 +32,7 @@ export function CourseListPage() {
         title="Jadwal kuliah"
         action={
           <button
+            data-tour="add-course"
             onClick={() => setForm("baru")}
             className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
           >
@@ -37,9 +41,9 @@ export function CourseListPage() {
         }
       />
 
-      <div className="mt-5 grid gap-3">
+      <div data-tour="course-list" className="mt-5 grid gap-3">
         {sorted.length === 0 && (
-          <p className={cn(card, "text-center text-sm text-slate-500")}>
+          <p className={cn(card, "text-center text-sm text-slate-500 dark:text-slate-400")}>
             Belum ada jadwal kuliah.
           </p>
         )}
@@ -57,7 +61,7 @@ export function CourseListPage() {
             </div>
             <div className="min-w-48 flex-1">
               <p className="font-semibold">{course.name}</p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 {[course.lecturer, course.room].filter(Boolean).join(" · ") ||
                   "-"}
               </p>
@@ -67,17 +71,14 @@ export function CourseListPage() {
             </div>
             <button
               onClick={() => setForm(course)}
-              className="text-slate-400 hover:text-slate-700"
+              className="text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300"
               aria-label={`Ubah ${course.name}`}
             >
               <Pencil className="size-4" />
             </button>
             <button
-              onClick={() =>
-                confirm(`Hapus jadwal "${course.name}"?`) &&
-                deleteCourse(course.id)
-              }
-              className="text-slate-400 hover:text-red-500"
+              onClick={() => setDeleteCourseTarget(course)}
+              className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
               aria-label={`Hapus ${course.name}`}
             >
               <Trash2 className="size-4" />
@@ -90,6 +91,18 @@ export function CourseListPage() {
         <CourseForm
           course={form === "baru" ? undefined : form}
           onClose={() => setForm(null)}
+        />
+      )}
+      {deleteCourseTarget && (
+        <DeleteConfirmationDialog
+          title="Hapus jadwal kuliah?"
+          itemName={deleteCourseTarget.name}
+          description="Jadwal mata kuliah dan kaitannya dengan tugas akan dihapus. Tindakan ini tidak dapat dibatalkan."
+          onClose={() => setDeleteCourseTarget(null)}
+          onConfirm={() => {
+            deleteCourse(deleteCourseTarget.id);
+            setDeleteCourseTarget(null);
+          }}
         />
       )}
     </section>

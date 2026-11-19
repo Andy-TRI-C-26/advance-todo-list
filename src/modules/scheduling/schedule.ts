@@ -19,6 +19,11 @@ export type SchedulableTask = {
   deadline: string;
   hours: number;
   completed?: boolean;
+  progress?: number;
+  actualMinutes?: number;
+  energy?: "Tinggi" | "Sedang" | "Rendah";
+  plannedStart?: string;
+  plannedEnd?: string;
 };
 export type BusyBlock = { day: string; start: string; end: string };
 
@@ -66,7 +71,7 @@ function subtractBusy(
 
 /** Waktu kosong pada satu hari (offset 0 = hari ini). */
 function buildDay(input: ScheduleInput, offset: number): PlanDay {
-  const { courses, sleepStart, sleepEnd, now } = input;
+  const { courses, tasks, sleepStart, sleepEnd, now } = input;
   const date = new Date(
     now.getFullYear(),
     now.getMonth(),
@@ -89,6 +94,23 @@ function buildDay(input: ScheduleInput, offset: number): PlanDay {
       windows,
       toMinutes(course.start),
       toMinutes(course.end),
+    );
+  }
+  for (const task of tasks) {
+    if (!task.plannedStart || !task.plannedEnd) continue;
+    const plannedStart = new Date(task.plannedStart);
+    const plannedEnd = new Date(task.plannedEnd);
+    if (
+      Number.isNaN(plannedStart.getTime()) ||
+      Number.isNaN(plannedEnd.getTime()) ||
+      plannedStart.toDateString() !== date.toDateString()
+    ) {
+      continue;
+    }
+    windows = subtractBusy(
+      windows,
+      plannedStart.getHours() * 60 + plannedStart.getMinutes(),
+      plannedEnd.getHours() * 60 + plannedEnd.getMinutes(),
     );
   }
   return { midnight: date.getTime(), windows };
@@ -139,17 +161,48 @@ export function schedule(input: ScheduleInput): SchedulePlan {
     .flatMap((day) => day.windows)
     .reduce((sum, w) => sum + (w.end - w.start), 0);
 
-  const slots: Slot[] = [];
+  const slots: Slot[] = input.tasks
+    .filter((task) => task.plannedStart && task.plannedEnd && !task.completed)
+    .flatMap((task) => {
+      const start = new Date(task.plannedStart!);
+      const end = new Date(task.plannedEnd!);
+      return Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())
+        ? []
+        : [{ taskId: task.id, start, end, fixed: true }];
+    });
   const shortfall: Record<string, number> = {};
+  const riskByTask: Record<string, number> = {};
 
   const activeTasks = input.tasks
     .filter((t) => !t.completed)
+    .filter((t) => !t.plannedStart || !t.plannedEnd)
     .sort((a, b) => +new Date(a.deadline) - +new Date(b.deadline));
 
   for (const task of activeTasks) {
     const missing = allocate(task, days, slots);
     if (missing > 0) shortfall[task.id] = missing;
+
+    const progress = Math.min(100, Math.max(0, task.progress ?? 0));
+    const remainingHours = task.hours * (1 - progress / 100);
+    const actualRatio =
+      task.actualMinutes && task.hours > 0
+        ? Math.max(1, task.actualMinutes / (task.hours * 60))
+        : 1;
+    const effectiveHours = remainingHours * actualRatio;
+    const hoursUntilDeadline = Math.max(
+      0,
+      (new Date(task.deadline).getTime() - input.now.getTime()) / 3_600_000,
+    );
+    const urgency = effectiveHours / Math.max(hoursUntilDeadline, 1);
+    riskByTask[task.id] = Math.min(
+      100,
+      Math.round(
+        urgency * 70 +
+          (missing > 0 ? 30 : 0) +
+          (task.energy === "Tinggi" ? 5 : 0),
+      ),
+    );
   }
 
-  return { slots, shortfall, freeMinutesNext7Days };
+  return { slots, shortfall, riskByTask, freeMinutesNext7Days };
 }

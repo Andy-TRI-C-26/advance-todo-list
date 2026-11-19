@@ -12,8 +12,9 @@ export function buildPayload(args: {
   activeTasks: Task[];
   courses: Course[];
   settings: Settings;
+  now: Date;
 }): RecommendationPayload {
-  const { selected, activeTasks, courses, settings } = args;
+  const { selected, activeTasks, courses, settings, now } = args;
 
   return {
     selectedTask: {
@@ -21,6 +22,8 @@ export function buildPayload(args: {
       course: courses.find((c) => c.id === selected.courseId)?.name ?? "Umum",
       deadline: selected.deadline,
       hours: selected.hours,
+      progress: selected.progress ?? 0,
+      energy: selected.energy ?? "Sedang",
     },
     otherTasks: activeTasks
       .filter((t) => t.id !== selected.id)
@@ -42,5 +45,6 @@ export function buildPayload(args: {
       operatingStart: "05:00",
       operatingEnd: "22:00",
     },
+    currentTime: now.toISOString(),
   };
 }
